@@ -67,7 +67,7 @@ async (IBookService bookService, [FromBody] Book book, IValidator<Book> validato
 
     return Results.Created($"/books/{book.Isbn}", book);
 
-});//.AllowAnomymous();
+}).WithName("CreateBook");//.AllowAnomymous();
 
 app.MapGet("/books", async (IBookService bookService, [FromQuery] string? searchTerm) =>
 {
@@ -80,13 +80,15 @@ app.MapGet("/books", async (IBookService bookService, [FromQuery] string? search
     // no search term
     var books = await bookService.GetALlAsync();
     return Results.Ok(books);
-});
+
+}).WithName("GetAllBooks");
 
 app.MapGet("books/{isbn}", async (string isbn, IBookService bookService) =>
 {
     var book = await bookService.GetByIsbnAsync(isbn);
     return book != null ? Results.Ok(book) : Results.NotFound();
-});
+
+}).WithName("GetBookByIsbn");
 
 app.MapPut("books/{isbn}", async (string isbn, Book book, IBookService bookService, IValidator<Book> validator) =>
 {
@@ -99,13 +101,13 @@ app.MapPut("books/{isbn}", async (string isbn, Book book, IBookService bookServi
 
     var updated = await bookService.UpdateAsync(book);
     return updated ? Results.Ok(book) : Results.NotFound();
-});
+}).WithName("UpdateBook");
 
 app.MapDelete("books/{isbn}", async (string isbn, IBookService bookService) =>
 {
     var deleted = await bookService.DeleteAsync(isbn);
     return deleted ? Results.NoContent() : Results.NotFound();
-});
+}).WithName("DeleteBook");
 
 
 
